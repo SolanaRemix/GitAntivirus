@@ -143,7 +143,7 @@ class FileScanner {
     
     return this.sensitiveFiles.some(pattern => {
       if (pattern.includes('*')) {
-        const regex = new RegExp(pattern.replace('*', '.*'));
+        const regex = new RegExp(pattern.replace(/\*/g, '.*'));
         return regex.test(basename);
       }
       return basename === pattern || filename.endsWith(pattern);
