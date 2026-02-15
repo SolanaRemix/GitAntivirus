@@ -1,0 +1,37 @@
+{
+  "name": "gitantivirus",
+  "version": "1.0.0",
+  "description": "Automated security scanning service for GitHub repositories - part of the CyberAi ecosystem",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "scan": "node index.js .",
+    "scan:fix": "node index.js . --fix",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "security",
+    "scanning",
+    "vulnerability",
+    "antivirus",
+    "github",
+    "automation",
+    "secrets-detection",
+    "code-analysis",
+    "cyberai"
+  ],
+  "author": "CyberAi Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SolanaRemix/GitAntivirus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SolanaRemix/GitAntivirus/issues"
+  },
+  "homepage": "https://github.com/SolanaRemix/GitAntivirus#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": false
+}

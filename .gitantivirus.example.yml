@@ -1,0 +1,95 @@
+# GitAntivirus Configuration File
+# Place this file in your repository root as .gitantivirus.yml
+
+version: 1.0
+
+# Scanning configuration
+scanning:
+  enabled: true
+  auto_fix: false  # Set to true to automatically apply fixes
+  
+  # Enable/disable specific scanners
+  scan_secrets: true
+  scan_files: true
+  scan_packages: true
+  scan_code: true
+
+# Exclusions - files and paths to skip during scanning
+exclusions:
+  paths:
+    - node_modules/
+    - dist/
+    - build/
+    - coverage/
+    - .git/
+    - vendor/
+  
+  files:
+    - "*.test.js"
+    - "*.spec.js"
+    - "*.min.js"
+    - "*.map"
+    - package-lock.json
+    - yarn.lock
+
+# Severity threshold - only report issues at or above this level
+# Options: critical, high, medium, low, info
+severity_threshold: medium
+
+# Notifications configuration
+notifications:
+  enabled: true
+  channels:
+    - github_issues
+    - pull_requests
+  
+  # Notify on specific severities
+  notify_on:
+    - critical
+    - high
+
+# Auto-fix configuration
+auto_fix:
+  enabled: false
+  create_pr: true
+  require_approval: true
+  
+  # Types of issues to auto-fix
+  fix_types:
+    - vulnerable_package
+    - missing_gitignore
+    - console_log
+    - debugger
+
+# Custom patterns to detect (advanced)
+custom_patterns:
+  # Add custom secret patterns
+  secrets:
+    - name: "Custom API Key"
+      pattern: "custom_api_[a-zA-Z0-9]{32}"
+      severity: high
+  
+  # Add custom vulnerability patterns
+  vulnerabilities:
+    - name: "Unsafe Eval"
+      pattern: "eval\\s*\\("
+      severity: high
+      recommendation: "Avoid using eval() - use safer alternatives"
+
+# Reporting configuration
+reporting:
+  format: markdown  # Options: markdown, json, html
+  include_context: true
+  max_context_lines: 5
+  group_by_severity: true
+
+# Integration settings
+integrations:
+  github:
+    create_issues: false
+    add_labels: true
+    labels:
+      critical: "security-critical"
+      high: "security-high"
+      medium: "security-medium"
+      low: "security-low"

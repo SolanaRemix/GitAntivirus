@@ -1,12 +1,342 @@
-﻿<!DOCTYPE html>
-<html lang=""en"">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset=""UTF-8"" />
-  <title>GitAntivirus – CyberAi Service</title>
-  <meta name=""description"" content=""GitAntivirus service of CyberAi ecosystem."" />
-  <meta name=""viewport"" content=""width=device-width, initial-scale=1"" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitAntivirus – Automated Security Scanning for GitHub</title>
+  <meta name="description" content="GitAntivirus - Automated security scanning service for GitHub repositories. Detect secrets, vulnerabilities, and security holes instantly." />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px;
+      color: white;
+    }
+
+    .logo {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .tagline {
+      font-size: 1.5rem;
+      opacity: 0.95;
+      margin-bottom: 40px;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 15px 40px;
+      background: white;
+      color: #667eea;
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .features {
+      background: white;
+      border-radius: 20px;
+      padding: 60px 40px;
+      margin: 40px 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 50px;
+      color: #667eea;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .feature-card {
+      padding: 30px;
+      border: 2px solid #f0f0f0;
+      border-radius: 15px;
+      text-align: center;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: #667eea;
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .feature-card p {
+      color: #666;
+      line-height: 1.8;
+    }
+
+    .usage {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      color: white;
+      padding: 60px 40px;
+      border-radius: 20px;
+      margin: 40px 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    .usage h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+    }
+
+    .usage-example {
+      background: rgba(0,0,0,0.2);
+      padding: 30px;
+      border-radius: 15px;
+      margin: 20px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 40px 0;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: white;
+      opacity: 0.9;
+    }
+
+    .links {
+      margin-top: 20px;
+    }
+
+    .links a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-size: 1.1rem;
+      transition: opacity 0.3s;
+    }
+
+    .links a:hover {
+      opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .tagline {
+        font-size: 1.2rem;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>GitAntivirus – CyberAi Service Frontend Shell</h1>
+  <div class="container">
+    <header>
+      <div class="logo">🛡️</div>
+      <h1>GitAntivirus</h1>
+      <p class="tagline">Automated Security Scanning for GitHub Repositories</p>
+      <a href="https://github.com/SolanaRemix/GitAntivirus" class="cta-button">Get Started on GitHub</a>
+    </header>
+
+    <section class="features">
+      <h2>🌟 Key Features</h2>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>Secret Detection</h3>
+          <p>Automatically detect exposed API keys, tokens, passwords, and credentials in your code.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>Vulnerability Scanning</h3>
+          <p>Scan dependencies and code for known security vulnerabilities and CVEs.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🤖</div>
+          <h3>Auto-Fix</h3>
+          <p>Automatically fix common security issues and create pull requests with solutions.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Detailed Reports</h3>
+          <p>Get comprehensive security reports with severity ratings and remediation steps.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>Comment-Triggered</h3>
+          <p>Simply mention @GitAntivirus in comments to trigger security scans.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🌍</div>
+          <h3>Global Support</h3>
+          <p>Works on any public GitHub repository - help secure the open source community.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="usage">
+      <h2>💡 How to Use</h2>
+      
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-number">1</div>
+          <div class="stat-label">Comment</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">2</div>
+          <div class="stat-label">Scan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Fix</div>
+        </div>
+      </div>
+
+      <div class="usage-example">
+        <strong>Trigger a scan:</strong><br>
+        @GitAntivirus scan this repository
+      </div>
+
+      <div class="usage-example">
+        <strong>Scan and auto-fix:</strong><br>
+        @GitAntivirus scan and fix
+      </div>
+
+      <div class="usage-example">
+        <strong>Check for leaks:</strong><br>
+        @GitAntivirus detect-leaks
+      </div>
+
+      <div class="usage-example">
+        <strong>Generate report:</strong><br>
+        @GitAntivirus report
+      </div>
+    </section>
+
+    <section class="features">
+      <h2>🔍 What We Scan For</h2>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔑</div>
+          <h3>Credentials</h3>
+          <p>API keys, tokens, passwords, private keys, certificates</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📦</div>
+          <h3>Dependencies</h3>
+          <p>Vulnerable npm packages, outdated libraries, known CVEs</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">💻</div>
+          <h3>Code Issues</h3>
+          <p>SQL injection, XSS, command injection, path traversal</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📁</div>
+          <h3>Sensitive Files</h3>
+          <p>.env files, config files, backup files with secrets</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>GitAntivirus</strong> - Part of the CyberAi Ecosystem</p>
+      <p>Keeping your code secure, one commit at a time</p>
+      
+      <div class="links">
+        <a href="https://github.com/SolanaRemix/GitAntivirus">GitHub</a>
+        <a href="https://github.com/SolanaRemix/GitAntivirus/issues">Report Issue</a>
+        <a href="https://github.com/SolanaRemix/GitAntivirus#readme">Documentation</a>
+      </div>
+      
+      <p style="margin-top: 30px; opacity: 0.7;">Made with ❤️ by the CyberAi Team</p>
+    </footer>
+  </div>
 </body>
 </html>
