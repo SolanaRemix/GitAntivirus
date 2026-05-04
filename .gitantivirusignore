@@ -1,0 +1,14 @@
+# .gitantivirusignore
+# Paths (relative to repo root) to exclude from scanning.
+# Lines beginning with # are comments. Blank lines are ignored.
+
+# Scanner implementation — contains regex patterns that look like threats
+scanner/
+core/
+
+# Example/config files — contain illustrative patterns, not real secrets
+.gitantivirus.example.yml
+
+# Test fixtures (known-bad files) are excluded from the production scan;
+# a dedicated test step (npm test) verifies detection separately.
+tests/malicious/

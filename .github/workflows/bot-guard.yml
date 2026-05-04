@@ -1,0 +1,38 @@
+name: Bot Guard
+on:
+  pull_request:
+jobs:
+  validate-bot:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Check Commit Source
+        run: |
+          echo "Actor: ${{ github.actor }}"
+          if [[ "${{ github.actor }}" == *"[bot]"* || "${{ github.actor }}" == *"-bot"* ]]; then
+            echo "Bot detected — enforcing strict scan mode (--fail-on=low)"
+            echo "BOT_STRICT=true" >> "$GITHUB_ENV"
+          else
+            echo "Human actor — standard scan mode (--fail-on=medium)"
+            echo "BOT_STRICT=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Enforce Strict Scan (bot)
+        if: env.BOT_STRICT == 'true'
+        run: node cli/gitav.js scan --fail-on=low
+
+      - name: Standard Scan (human)
+        if: env.BOT_STRICT == 'false'
+        run: node cli/gitav.js scan --fail-on=medium
