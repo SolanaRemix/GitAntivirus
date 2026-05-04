@@ -8,8 +8,16 @@ const path = require('path');
 const { rules } = require('./rules');
 const { calculateRisk } = require('./risk');
 
-/** Directories to always skip */
-const SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage', 'tests/malicious']);
+/** Single-component directory names to always skip */
+const SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'build', 'coverage']);
+
+/**
+ * Hard-coded relative-path prefixes to always skip (multi-segment paths).
+ * Stored with forward slashes; normalised to path.sep at match time.
+ */
+const SKIP_PATH_PREFIXES = [
+  'tests/malicious'
+];
 
 /** File extensions we can meaningfully scan as text */
 const TEXT_EXTENSIONS = new Set([
@@ -20,9 +28,10 @@ const TEXT_EXTENSIONS = new Set([
 ]);
 
 /**
- * Read ignore patterns from .gitantivirusignore in cwd (if present)
- * Each non-empty, non-comment line is treated as a path prefix to skip.
- * @returns {string[]}
+ * Read ignore patterns from .gitantivirusignore in cwd (if present).
+ * Each non-empty, non-comment line is treated as a relative path prefix.
+ * Trailing slashes are stripped; forward slashes are converted to path.sep.
+ * @returns {string[]} normalised patterns
  */
 function readIgnorePatterns() {
   const ignorePath = path.join(process.cwd(), '.gitantivirusignore');
@@ -30,25 +39,34 @@ function readIgnorePatterns() {
   return fs.readFileSync(ignorePath, 'utf8')
     .split('\n')
     .map(l => l.trim())
-    .filter(l => l && !l.startsWith('#'));
+    .filter(l => l && !l.startsWith('#'))
+    .map(l => l.replace(/\//g, path.sep).replace(new RegExp(`\\${path.sep}$`), ''));
 }
 
 /**
- * Check whether a path (relative to cwd) should be skipped
- * @param {string} relPath - path relative to process.cwd()
- * @param {string[]} ignorePatterns
+ * Check whether a path (relative to cwd) should be skipped.
+ * @param {string} relPath - path relative to process.cwd(), using OS separators
+ * @param {string[]} ignorePatterns - normalised patterns from readIgnorePatterns()
  * @returns {boolean}
  */
 function shouldSkip(relPath, ignorePatterns) {
+  // Skip if any single directory component is in SKIP_DIRS
   const parts = relPath.split(path.sep);
-  // Skip if any directory component is in SKIP_DIRS
   for (const part of parts) {
     if (SKIP_DIRS.has(part)) return true;
   }
+
+  // Skip hard-coded multi-segment prefixes
+  for (const prefix of SKIP_PATH_PREFIXES) {
+    const normalised = prefix.replace(/\//g, path.sep);
+    if (relPath === normalised || relPath.startsWith(normalised + path.sep)) return true;
+  }
+
   // Respect .gitantivirusignore patterns
   for (const pattern of ignorePatterns) {
-    if (relPath.startsWith(pattern) || relPath === pattern) return true;
+    if (relPath === pattern || relPath.startsWith(pattern + path.sep)) return true;
   }
+
   return false;
 }
 

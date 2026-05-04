@@ -4,8 +4,8 @@
  *
  * Commands
  *   gitav scan [--fail-on=<level>]   Run a full project scan
+ *   gitav report                      Print the last scan report (reports/latest.json)
  *   gitav fix                         (stub) Apply auto-fixes
- *   gitav report                      (stub) Display last report
  *   gitav watch                       (stub) Real-time watcher
  *
  * Exit codes

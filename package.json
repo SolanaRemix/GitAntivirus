@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "scan": "node cli/gitav.js scan --fail-on=medium",
-    "scan:fix": "node index.js . --fix",
+    "scan:fix": "node cli/gitav.js fix",
     "test": "node tests/verify-detection.js"
   },
   "bin": {
