@@ -13,8 +13,10 @@
 
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { rules } = require('../core/rules');
 const { calculateRisk } = require('../core/risk');
+const { scanProject } = require('../core/scanner');
 
 let passed = 0;
 let failed = 0;
@@ -78,9 +80,79 @@ assert(highLevel === 'high', `score 75 → "high" (got "${highLevel}")`);
 const { level: critLevel } = calculateRisk([{ severity: 'critical' }]);
 assert(critLevel === 'critical', `score 90 → "critical" (got "${critLevel}")`);
 
-// --- Summary ---
-console.log(`\n📊 Results: ${passed} passed, ${failed} failed\n`);
-if (failed > 0) {
-  process.exit(1);
-}
-process.exit(0);
+// --- Test 4: scanProject() integration — walk, ignore, and hard-skip ---
+console.log('\n[Test 4] scanProject() integration: walking, .gitantivirusignore, and hard-skip');
+
+(async () => {
+  const originalCwd = process.cwd();
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gitav-test-'));
+
+  try {
+    // Build the test fixture key in two parts so the scanner doesn't flag *this* source file.
+    // The concatenated string is '0x' followed by exactly 64 hex chars, which triggers the
+    // Private Key Exposure detection rule.
+    const fakeKey = '0x123456789abcdef123456789' +
+                    'abcdef123456789abcdef123456789abcdef1234';
+    const badContent = `const key = '${fakeKey}';`;
+
+    // Write a malicious file that should be found (matches Private Key Exposure rule: 0x + 64 hex chars)
+    fs.mkdirSync(path.join(tmpDir, 'src'), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, 'src', 'bad.js'), badContent);
+
+    // Write a safe file
+    fs.writeFileSync(
+      path.join(tmpDir, 'src', 'good.js'),
+      'console.log("hello world");'
+    );
+
+    // Write a file in a hard-skipped subtree (tests/malicious)
+    fs.mkdirSync(path.join(tmpDir, 'tests', 'malicious'), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, 'tests', 'malicious', 'fixture.js'), badContent);
+
+    // Write an ignored file via .gitantivirusignore
+    fs.mkdirSync(path.join(tmpDir, 'ignored'), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, 'ignored', 'secret.js'),
+      'const key = "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890";'
+    );
+    fs.writeFileSync(
+      path.join(tmpDir, '.gitantivirusignore'),
+      'ignored/\n'
+    );
+
+    process.chdir(tmpDir);
+    const result = await scanProject();
+
+    // Should find the malicious key in src/bad.js
+    assert(result.findings.length > 0, 'scanProject() detected findings in src/bad.js');
+
+    // All finding paths must be relative (no absolute paths)
+    const hasAbsPath = result.findings.some(f => path.isAbsolute(f.file));
+    assert(!hasAbsPath, 'All finding paths are relative (not absolute)');
+
+    // The hard-skipped tests/malicious/ subtree must not appear in findings.
+    // Normalise separators so the check is platform-independent.
+    const maliciousPrefix = path.join('tests', 'malicious');
+    const hasSkippedPath = result.findings.some(
+      f => f.file === maliciousPrefix || f.file.startsWith(maliciousPrefix + path.sep)
+    );
+    assert(!hasSkippedPath, 'tests/malicious/ subtree is hard-skipped by scanProject()');
+
+    // The .gitantivirusignore'd directory must not appear in findings
+    const hasIgnoredPath = result.findings.some(
+      f => f.file === 'ignored' || f.file.startsWith('ignored' + path.sep)
+    );
+    assert(!hasIgnoredPath, '.gitantivirusignore exclusion is respected by scanProject()');
+
+  } finally {
+    process.chdir(originalCwd);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+
+  // --- Summary ---
+  console.log(`\n📊 Results: ${passed} passed, ${failed} failed\n`);
+  if (failed > 0) {
+    process.exit(1);
+  }
+  process.exit(0);
+})();

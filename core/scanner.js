@@ -22,10 +22,17 @@ const SKIP_PATH_PREFIXES = [
 /** File extensions we can meaningfully scan as text */
 const TEXT_EXTENSIONS = new Set([
   '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
-  '.json', '.yml', '.yaml', '.env', '.sh',
+  '.json', '.yml', '.yaml', '.sh',
   '.php', '.py', '.rb', '.go', '.sol',
   '.txt', '.md', '.html', '.htm', '.xml', '.csv'
 ]);
+
+/**
+ * Exact filenames (no extension) that should always be scanned as text.
+ * `path.extname('.env')` returns '' rather than '.env', so we handle
+ * such dotfiles explicitly by their full basename.
+ */
+const TEXT_BASENAMES = new Set(['.env', '.htaccess', '.envrc']);
 
 /**
  * Read ignore patterns from .gitantivirusignore in cwd (if present).
@@ -100,8 +107,12 @@ function walk(dir, ignorePatterns, fileList = []) {
 
     if (stat.isDirectory()) {
       walk(fullPath, ignorePatterns, fileList);
-    } else if (TEXT_EXTENSIONS.has(path.extname(entry).toLowerCase())) {
-      fileList.push(fullPath);
+    } else {
+      const ext = path.extname(entry).toLowerCase();
+      const base = entry.toLowerCase();
+      if (TEXT_EXTENSIONS.has(ext) || TEXT_BASENAMES.has(base)) {
+        fileList.push(fullPath);
+      }
     }
   }
   return fileList;
@@ -126,7 +137,7 @@ function scanFile(filePath) {
       findings.push({
         type: rule.name,
         severity: rule.severity,
-        file: filePath
+        file: path.relative(process.cwd(), filePath)
       });
     }
   }

@@ -59,7 +59,11 @@ function getArg(flag) {
       process.exit(1);
     }
 
-    generateReport(result);
+    try {
+      generateReport(result);
+    } catch (err) {
+      console.error('⚠️  Warning: could not write report:', err.message);
+    }
 
     console.log(`📊 Findings   : ${result.findings.length}`);
     console.log(`📈 Risk Score : ${result.score}/100`);
