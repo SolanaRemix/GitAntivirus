@@ -1,0 +1,19 @@
+# .gitantivirusignore
+# Paths (relative to repo root) to exclude from scanning.
+# Lines beginning with # are comments. Blank lines are ignored.
+# Trailing slashes and leading/trailing whitespace are stripped automatically.
+# Forward slashes are treated as path separators on all platforms.
+
+# These scanner source files contain regex pattern literals and recommendation
+# strings that contain words like "eval(" or "password =" as part of their code,
+# which would otherwise produce false-positive findings. Only these specific
+# files are excluded; the rest of scanner/ and core/ are scanned normally.
+scanner/code.js
+scanner/packages.js
+
+# Example config file — contains illustrative patterns, not real secrets
+.gitantivirus.example.yml
+
+# Test fixtures (known-bad files) are excluded from the production scan;
+# a dedicated test step (npm test) verifies detection against them separately.
+tests/malicious/

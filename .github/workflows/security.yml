@@ -1,9 +1,50 @@
-﻿name: Security Scan
-on: [push]
+name: GitAntivirus Security Pipeline
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
 jobs:
-  scan:
+  gitav-scan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - name: Security Scan placeholder
-        run: echo 'Security scan for GitAntivirus'
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run GitAntivirus Scan
+        run: node cli/gitav.js scan --fail-on=medium
+
+      - name: Upload Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: reports/latest.json
+
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Detection Tests
+        run: npm test
